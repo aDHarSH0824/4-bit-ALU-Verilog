@@ -1,0 +1,19 @@
+# Simulation executables and temporary build outputs
+simulation/alu_sim
+*.vvp
+*.out
+*.exe
+*.o
+
+# Log files and temporary simulator dumps
+*.log
+*.key
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor directories
+.vscode/
+.idea/
+
