@@ -315,35 +315,4 @@ Tests Failed         : 0
 | 20 | `111` | RSHIFT | `0110` | `xxxx` | `0011` | `0` | `0` | Shift right by 1 |
 | 21 | `111` | RSHIFT | `0001` | `xxxx` | `0000` | `0` | `1` | Shift out to zero (Z=1) |
 
----
-
-## 10. ECE Technical Interview & Viva Preparation
-
-Here are key questions frequently asked in digital design and VLSI interviews regarding ALU implementations:
-
-#### Q1: Why is an ALU modeled as combinational logic rather than sequential logic?
-> **Answer**: The ALU core itself is purely mathematical: given inputs $A$, $B$, and `opcode`, the result is a direct boolean function of the current inputs with no internal state or clock storage required. Sequential registers (like an Accumulator, Pipeline Registers, or Program Counter) exist *around* the ALU in a CPU datapath, not inside the combinational ALU block itself.
-
-#### Q2: Why did you use `always @(*)` instead of an explicit sensitivity list?
-> **Answer**: Verilog-2001 introduced `always @(*)`, which automatically infers all signals read inside the block (`A`, `B`, `opcode`). If an explicit list like `always @(A or B)` accidentally omitted `opcode`, the simulation would create a mismatch with hardware (simulation mismatch) where changes in opcode would fail to update outputs until $A$ or $B$ toggled.
-
-#### Q3: How do you prevent accidental latch inference in Verilog?
-> **Answer**: A latch is inferred when a variable inside a combinational `always` block is not assigned in every possible branch. In this design, latch inference is eliminated by:
-> 1. Setting default assignments (`result = 4'b0000; carry_out = 1'b0;`) at the top of the `always @(*)` block.
-> 2. Providing an exhaustive `case` statement with a `default` fallback.
-
-#### Q4: How is arithmetic carry vs borrow handled in your ALU?
-> **Answer**:
-> - In **Addition** ($A + B$), `{carry_out, result} = A + B` utilizes bit 4 as the 5th bit of the sum. When $A + B > 15$, `carry_out` becomes $1$.
-> - In **Subtraction** ($A - B$), in unsigned binary arithmetic, if $A < B$, an underflow occurs and a borrow is needed. The 5-bit subtraction produces a borrow bit at bit 4 (`carry_out = 1`). If $A \ge B$, no borrow is required (`carry_out = 0`).
-
-#### Q5: Why is `zero_flag` generated via `assign zero_flag = (result == 4'b0000);`?
-> **Answer**: Assigning `zero_flag` via continuous assignment cleanly decouples the status calculation from the operation decoding. It acts as a 4-input NOR gate on the output bits ($Z = \overline{R_3 + R_2 + R_1 + R_0}$), evaluating instantly whenever `result` changes.
-
----
-
-## 11. Authors & License
-- **Author**: ECE Digital System Design Team
-- **Language**: Verilog HDL (IEEE 1364-2001)
-- **License**: MIT Open Source Academic License
 
